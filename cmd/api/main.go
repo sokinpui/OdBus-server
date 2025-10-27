@@ -38,7 +38,7 @@ func main() {
 	}
 	log.Println("database migration successful")
 
-	if err := database.SeedBlockedSigns(db, "No_public_light_buses_labels.kmz"); err != nil {
+	if err := database.SeedBlockedSigns(db, "blocked_sign.kmz"); err != nil {
 		log.Fatalf("could not seed blocked signs data: %v", err)
 	}
 

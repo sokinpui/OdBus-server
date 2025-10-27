@@ -21,6 +21,8 @@ func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 		return nil
 	}
 
+	log.Printf("seeding data from %s", kmzPath)
+
 	latLongs, err := kml.ParseKMZ(kmzPath)
 	if err != nil {
 		return fmt.Errorf("could not parse KMZ file: %w", err)
@@ -37,6 +39,8 @@ func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 		return fmt.Errorf("could not prepare statement: %w", err)
 	}
 	defer stmt.Close()
+
+	log.Println("inserting records into blocked_signs table...")
 
 	for _, ll := range latLongs {
 		if _, err := stmt.Exec(ll.Latitude, ll.Longitude); err != nil {

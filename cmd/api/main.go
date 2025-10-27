@@ -9,10 +9,13 @@ import (
 	"go-https-server/internal/router"
 	"go-https-server/internal/server"
 	"go-https-server/internal/handler"
+	"go-https-server/internal/logger"
 	"go-https-server/internal/store"
 )
 
 func main() {
+	logger.Init()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("could not load config: %v", err)

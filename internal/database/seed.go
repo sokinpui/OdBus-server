@@ -34,7 +34,7 @@ func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 	}
 	defer txn.Rollback()
 
-	stmt, err := txn.Prepare("INSERT INTO blocked_signs (latitude, longitude) VALUES ($1, $2)")
+	stmt, err := txn.Prepare("INSERT INTO blocked_signs (location) VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326))")
 	if err != nil {
 		return fmt.Errorf("could not prepare statement: %w", err)
 	}
@@ -43,7 +43,7 @@ func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 	log.Println("inserting records into blocked_signs table...")
 
 	for _, ll := range latLongs {
-		if _, err := stmt.Exec(ll.Latitude, ll.Longitude); err != nil {
+		if _, err := stmt.Exec(ll.Longitude, ll.Latitude); err != nil {
 			return fmt.Errorf("could not execute statement: %w", err)
 		}
 	}

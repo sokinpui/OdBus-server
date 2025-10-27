@@ -8,6 +8,8 @@ import (
 	"go-https-server/internal/database"
 	"go-https-server/internal/router"
 	"go-https-server/internal/server"
+	"go-https-server/internal/handler"
+	"go-https-server/internal/store"
 )
 
 func main() {
@@ -28,11 +30,23 @@ func main() {
 
 	log.Println("database connection successful")
 
-	r := router.New()
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("could not migrate database: %v", err)
+	}
+	log.Println("database migration successful")
+
+	if err := database.SeedBlockedSigns(db, "MiniBus_blocked_sign.kmz"); err != nil {
+		log.Fatalf("could not seed blocked signs data: %v", err)
+	}
+
+	s := store.New(db)
+	apiHandler := handler.NewApiHandler(s)
+
+	r := router.New(apiHandler)
 	srv := server.New(cfg.ServerAddr, r)
 
 	log.Printf("starting server on %s", cfg.ServerAddr)
-	if err := srv.ListenAndServeTLS("cert.pem", "key.pem"); err != nil && err != http.ErrServerClosed {
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("could not start server: %v", err)
 	}
 }

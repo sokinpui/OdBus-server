@@ -5,14 +5,6 @@ import (
 	"net/http"
 )
 
-func PlaceholderGet(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, http.StatusOK, map[string]string{"message": "this is a placeholder GET response"})
-}
-
-func PlaceholderPost(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, http.StatusCreated, map[string]string{"message": "this is a placeholder POST response"})
-}
-
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, err := json.Marshal(payload)
 	if err != nil {
@@ -23,4 +15,8 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func respondWithError(w http.ResponseWriter, code int, message string) {
+	respondWithJSON(w, code, map[string]string{"error": message})
 }

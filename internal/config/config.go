@@ -37,7 +37,7 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("SERVER_ADDR is not set")
 	}
 
-	databaseURL := fmt.Sprintf("postgres://%s:%s@db:5432/%s?sslmode=disable", dbUser, dbPassword, dbName)
+	databaseURL := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", dbUser, dbPassword, dbName)
 
 	return &Config{
 		DatabaseURL: databaseURL,

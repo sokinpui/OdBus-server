@@ -7,11 +7,14 @@ import (
 	"go-https-server/internal/handler"
 )
 
-func New() http.Handler {
+func New(apiHandler *handler.ApiHandler) http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/api/items", handler.PlaceholderGet).Methods(http.MethodGet)
-	r.HandleFunc("/api/items", handler.PlaceholderPost).Methods(http.MethodPost)
+	api := r.PathPrefix("/api").Subrouter()
+
+	api.HandleFunc("/blocked_sign/qry", apiHandler.GetBlockedSigns).Methods(http.MethodGet)
+	api.HandleFunc("/station_point/create", apiHandler.CreateStationPoint).Methods(http.MethodPost)
+	api.HandleFunc("/station_point/qry", apiHandler.GetStationPoints).Methods(http.MethodGet)
 
 	return r
 }

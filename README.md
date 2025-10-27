@@ -1,11 +1,12 @@
-# PostgreSQL with Docker Compose
+# Go HTTP Server with PostgreSQL and Docker Compose
 
-This setup provides a simple way to run a PostgreSQL database using Docker Compose.
+This project provides a Go-based HTTP server that connects to a PostgreSQL database. The database is containerized using Docker Compose, and the Go server is run locally.
 
 ## Prerequisites
 
 - Docker
 - Docker Compose
+- Go (version 1.21 or newer)
 
 ## Getting Started
 
@@ -13,40 +14,59 @@ This setup provides a simple way to run a PostgreSQL database using Docker Compo
 
     Create a `.env` file in the same directory as the `docker-compose.yaml` file and add the following content:
 
-    ```
+    ```env
     POSTGRES_USER=admin
     POSTGRES_PASSWORD=admin
     POSTGRES_DB=app
+    SERVER_ADDR=0.0.0.0:8443
     ```
 
-2.  **Start the database**
+2.  **Start the Database**
 
-    Run the following command to start the PostgreSQL container in detached mode:
+    Start the PostgreSQL database using Docker Compose:
 
     ```bash
     docker-compose up -d
     ```
 
-3.  **Connect to the database**
+    This command runs the database container in detached mode.
 
-    You can connect to the database using any PostgreSQL client with the following credentials:
+3.  **Run the Go Server**
 
-    -   **Host**: `localhost`
-    -   **Port**: `5432`
-    -   **User**: `admin` (or the value of `POSTGRES_USER` in your `.env` file)
-    -   **Password**: `admin` (or the value of `POSTGRES_PASSWORD` in your `.env` file)
-    -   **Database**: `app` (or the value of `POSTGRES_DB` in your `.env` file)
+    In a separate terminal, run the Go server:
 
-4.  **Stop the database**
+    ```bash
+    go run ./cmd/api
+    ```
 
-    To stop the container, run:
+    The server will connect to the PostgreSQL database running in Docker.
+
+## Verifying the Server
+
+You can check the logs from the `go run` command to ensure everything started correctly. You should see output indicating that the database connection was successful, migrations were run, and the server has started on port 8443.
+
+To test the API, you can make a request to one of its endpoints with `curl`:
+
+```bash
+curl http://localhost:8443/api/blocked_sign/qry
+```
+
+## Stopping the Application
+
+1.  **Stop the Go Server**
+
+    Press `Ctrl+C` in the terminal where the server is running.
+
+2.  **Stop the Database**
+
+    To stop the database container, run:
 
     ```bash
     docker-compose down
     ```
 
-    To stop and remove the volume (deleting all data), run:
+To stop and remove the volume (deleting all data), run:
 
-    ```bash
-    docker-compose down -v
-    ```
+```bash
+docker-compose down -v
+```

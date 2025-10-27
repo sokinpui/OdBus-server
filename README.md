@@ -48,7 +48,7 @@ You can check the logs from the `go run` command to ensure everything started co
 To test the API, you can make a request to one of its endpoints with `curl`:
 
 ```bash
-curl http://localhost:8443/api/blocked_sign/qry
+curl http://localhost:8443/api/blockedSign/qry
 ```
 
 ## Stopping the Application

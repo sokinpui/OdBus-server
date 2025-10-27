@@ -23,6 +23,13 @@ type kml struct {
 // Document contains a list of Placemarks.
 type Document struct {
 	Placemarks []Placemark `xml:"Placemark"`
+	Folders    []Folder    `xml:"Folder"`
+}
+
+// Folder contains a list of Placemarks and other Folders.
+type Folder struct {
+	Placemarks []Placemark `xml:"Placemark"`
+	Folders    []Folder    `xml:"Folder"`
 }
 
 // Placemark contains a Point.
@@ -71,8 +78,20 @@ func parseKML(reader io.Reader) ([]LatLong, error) {
 		return nil, fmt.Errorf("failed to decode KML: %w", err)
 	}
 
+	var placemarks []Placemark
+	placemarks = append(placemarks, kmlData.Document.Placemarks...)
+
+	var collectPlacemarks func(folders []Folder)
+	collectPlacemarks = func(folders []Folder) {
+		for _, folder := range folders {
+			placemarks = append(placemarks, folder.Placemarks...)
+			collectPlacemarks(folder.Folders)
+		}
+	}
+	collectPlacemarks(kmlData.Document.Folders)
+
 	var latLongs []LatLong
-	for _, placemark := range kmlData.Document.Placemarks {
+	for _, placemark := range placemarks {
 		coordsStr := strings.TrimSpace(placemark.Point.Coordinates)
 		if coordsStr == "" {
 			continue

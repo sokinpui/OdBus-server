@@ -24,7 +24,7 @@ type StationPointCreateReq struct {
 	Longitude float64 `json:"longitude"`
 }
 
-// GetBlockedSigns handles GET /api/blocked_sign/qry
+// GetBlockedSigns handles GET /api/blockedSign/qry
 func (h *ApiHandler) GetBlockedSigns(w http.ResponseWriter, r *http.Request) {
 	signs, err := h.store.GetBlockedSigns()
 	if err != nil {
@@ -34,7 +34,7 @@ func (h *ApiHandler) GetBlockedSigns(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, signs)
 }
 
-// CreateStationPoint handles POST /api/station_point/create
+// CreateStationPoint handles POST /api/stationPoint/create
 func (h *ApiHandler) CreateStationPoint(w http.ResponseWriter, r *http.Request) {
 	var req StationPointCreateReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -55,7 +55,7 @@ func (h *ApiHandler) CreateStationPoint(w http.ResponseWriter, r *http.Request) 
 	respondWithJSON(w, http.StatusCreated, sp)
 }
 
-// GetStationPoints handles GET /api/station_point/qry
+// GetStationPoints handles GET /api/stationPoint/qry
 func (h *ApiHandler) GetStationPoints(w http.ResponseWriter, r *http.Request) {
 	points, err := h.store.GetStationPoints()
 	if err != nil {

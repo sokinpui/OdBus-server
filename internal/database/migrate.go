@@ -9,7 +9,7 @@ func Migrate(db *sql.DB) error {
 	}
 
 	createBlockedSignsTable := `
-	CREATE TABLE IF NOT EXISTS blocked_signs (
+	CREATE TABLE IF NOT EXISTS blockedSigns (
 		id SERIAL PRIMARY KEY,
 		location GEOGRAPHY(Point, 4326) NOT NULL
 	);`
@@ -19,7 +19,7 @@ func Migrate(db *sql.DB) error {
 	}
 
 	createStationPointsTable := `
-	CREATE TABLE IF NOT EXISTS station_points (
+	CREATE TABLE IF NOT EXISTS stationPoints (
 		id SERIAL PRIMARY KEY,
 		location GEOGRAPHY(Point, 4326) NOT NULL
 	);`

@@ -8,16 +8,16 @@ import (
 	"go-https-server/internal/kml"
 )
 
-// SeedBlockedSigns populates the blocked_signs table from a KMZ file if the table is empty.
+// SeedBlockedSigns populates the blockedSigns table from a KMZ file if the table is empty.
 func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM blocked_signs").Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM blockedSigns").Scan(&count)
 	if err != nil {
-		return fmt.Errorf("could not query blocked_signs count: %w", err)
+		return fmt.Errorf("could not query blockedSigns count: %w", err)
 	}
 
 	if count > 0 {
-		log.Println("blocked_signs table already seeded")
+		log.Println("blockedSigns table already seeded")
 		return nil
 	}
 
@@ -34,13 +34,13 @@ func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 	}
 	defer txn.Rollback()
 
-	stmt, err := txn.Prepare("INSERT INTO blocked_signs (location) VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326))")
+	stmt, err := txn.Prepare("INSERT INTO blockedSigns (location) VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326))")
 	if err != nil {
 		return fmt.Errorf("could not prepare statement: %w", err)
 	}
 	defer stmt.Close()
 
-	log.Println("inserting records into blocked_signs table...")
+	log.Println("inserting records into blockedSigns table...")
 
 	for _, ll := range latLongs {
 		if _, err := stmt.Exec(ll.Longitude, ll.Latitude); err != nil {
@@ -48,7 +48,7 @@ func SeedBlockedSigns(db *sql.DB, kmzPath string) error {
 		}
 	}
 
-	log.Printf("seeded %d records into blocked_signs table", len(latLongs))
+	log.Printf("seeded %d records into blockedSigns table", len(latLongs))
 
 	return txn.Commit()
 }

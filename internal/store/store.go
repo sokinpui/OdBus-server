@@ -18,7 +18,7 @@ func New(db *sql.DB) *Store {
 
 // GetBlockedSigns retrieves all blocked signs from the database.
 func (s *Store) GetBlockedSigns() ([]*models.BlockedSign, error) {
-	rows, err := s.db.Query("SELECT id, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude FROM blocked_signs")
+	rows, err := s.db.Query("SELECT id, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude FROM blockedSigns")
 	if err != nil {
 		return nil, err
 	}
@@ -37,13 +37,13 @@ func (s *Store) GetBlockedSigns() ([]*models.BlockedSign, error) {
 
 // CreateStationPoint inserts a new station point into the database.
 func (s *Store) CreateStationPoint(sp *models.StationPoint) error {
-	query := "INSERT INTO station_points (location) VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326)) RETURNING id"
+	query := "INSERT INTO stationPoints (location) VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326)) RETURNING id"
 	return s.db.QueryRow(query, sp.Longitude, sp.Latitude).Scan(&sp.ID)
 }
 
 // GetStationPoints retrieves all station points from the database.
 func (s *Store) GetStationPoints() ([]*models.StationPoint, error) {
-	rows, err := s.db.Query("SELECT id, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude FROM station_points")
+	rows, err := s.db.Query("SELECT id, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude FROM stationPoints")
 	if err != nil {
 		return nil, err
 	}

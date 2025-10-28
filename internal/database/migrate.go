@@ -23,10 +23,10 @@ func Migrate(db *sql.DB) error {
 		id SERIAL PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
 		location GEOGRAPHY(Point, 4326) NOT NULL,
-		created_by VARCHAR(255) NOT NULL,
-		created_at TIMESTAMPTZ DEFAULT NOW(),
-		updated_at TIMESTAMPTZ,
-		is_active BOOLEAN DEFAULT TRUE,
+		"createdBy" VARCHAR(255) NOT NULL,
+		"createdAt" TIMESTAMPTZ DEFAULT NOW(),
+		"updatedAt" TIMESTAMPTZ,
+		"isActive" BOOLEAN DEFAULT TRUE,
 		tags TEXT[]
 	);`
 	if _, err := db.Exec(createStationsTable); err != nil {

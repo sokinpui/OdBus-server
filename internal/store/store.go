@@ -39,9 +39,9 @@ func (s *Store) GetBlockedSigns() ([]*models.BlockedSign, error) {
 // CreateStationPoint inserts a new station point into the database.
 func (s *Store) CreateStation(st *models.Station) error {
 	query := `
-		INSERT INTO stations (name, location, created_by, is_active, tags)
+		INSERT INTO stations (name, location, "createdBy", "isActive", tags)
 		VALUES ($1, ST_SetSRID(ST_MakePoint($2, $3), 4326), $4, $5, $6)
-		RETURNING id, created_at`
+		RETURNING id, "createdAt"`
 	// For simplicity, created_by is hardcoded. In a real app, this would come from auth.
 	st.CreatedBy = "Current User"
 	st.IsActive = true
@@ -50,7 +50,7 @@ func (s *Store) CreateStation(st *models.Station) error {
 
 // GetStationPoints retrieves all station points from the database.
 func (s *Store) GetStations() ([]*models.Station, error) {
-	rows, err := s.db.Query("SELECT id, name, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude, created_by, created_at, updated_at, is_active, tags FROM stations ORDER BY id ASC")
+	rows, err := s.db.Query(`SELECT id, name, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude, "createdBy", "createdAt", "updatedAt", "isActive", tags FROM stations ORDER BY id ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (s *Store) GetStations() ([]*models.Station, error) {
 // GetStationByID retrieves a single station by its ID.
 func (s *Store) GetStationByID(id int) (*models.Station, error) {
 	var station models.Station
-	query := "SELECT id, name, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude, created_by, created_at, updated_at, is_active, tags FROM stations WHERE id = $1"
+	query := `SELECT id, name, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude, "createdBy", "createdAt", "updatedAt", "isActive", tags FROM stations WHERE id = $1`
 	err := s.db.QueryRow(query, id).Scan(&station.ID, &station.Name, &station.Latitude, &station.Longitude, &station.CreatedBy, &station.CreatedAt, &station.UpdatedAt, &station.IsActive, &station.Tags)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -92,8 +92,8 @@ func (s *Store) DeleteStation(id int) error {
 func (s *Store) UpdateStation(st *models.Station) error {
 	query := `
 		UPDATE stations
-		SET name = $1, tags = $2, updated_at = $3
+		SET name = $1, tags = $2, "updatedAt" = $3
 		WHERE id = $4
-		RETURNING id, name, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude, created_by, created_at, updated_at, is_active, tags`
+		RETURNING id, name, ST_Y(location::geometry) AS latitude, ST_X(location::geometry) AS longitude, "createdBy", "createdAt", "updatedAt", "isActive", tags`
 	return s.db.QueryRow(query, st.Name, st.Tags, time.Now(), st.ID).Scan(&st.ID, &st.Name, &st.Latitude, &st.Longitude, &st.CreatedBy, &st.CreatedAt, &st.UpdatedAt, &st.IsActive, &st.Tags)
 }

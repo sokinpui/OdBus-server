@@ -29,8 +29,11 @@ func New(apiHandler *handler.ApiHandler) http.Handler {
 	api := r.PathPrefix("/api").Subrouter()
 
 	api.HandleFunc("/blockedSign/qry", apiHandler.GetBlockedSigns).Methods(http.MethodGet)
-	api.HandleFunc("/stationPoint/create", apiHandler.CreateStationPoint).Methods(http.MethodPost)
-	api.HandleFunc("/stationPoint/qry", apiHandler.GetStationPoints).Methods(http.MethodGet)
+	api.HandleFunc("/station/create", apiHandler.CreateStation).Methods(http.MethodPost)
+	api.HandleFunc("/station/qry", apiHandler.GetStations).Methods(http.MethodGet)
+	api.HandleFunc("/station/{id}", apiHandler.GetStationByID).Methods(http.MethodGet)
+	api.HandleFunc("/station/{id}", apiHandler.UpdateStation).Methods(http.MethodPut)
+	api.HandleFunc("/station/{id}", apiHandler.DeleteStation).Methods(http.MethodDelete)
 
 	// Wrap the router with the CORS middleware
 	return handlers.CORS(corsOrigins, corsMethods, corsHeaders)(r)

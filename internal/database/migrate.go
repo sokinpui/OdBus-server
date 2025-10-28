@@ -18,13 +18,18 @@ func Migrate(db *sql.DB) error {
 		return err
 	}
 
-	createStationPointsTable := `
-	CREATE TABLE IF NOT EXISTS stationPoints (
+	createStationsTable := `
+	CREATE TABLE IF NOT EXISTS stations (
 		id SERIAL PRIMARY KEY,
-		location GEOGRAPHY(Point, 4326) NOT NULL
+		name VARCHAR(255) NOT NULL,
+		location GEOGRAPHY(Point, 4326) NOT NULL,
+		created_by VARCHAR(255) NOT NULL,
+		created_at TIMESTAMPTZ DEFAULT NOW(),
+		updated_at TIMESTAMPTZ,
+		is_active BOOLEAN DEFAULT TRUE,
+		tags TEXT[]
 	);`
-
-	if _, err := db.Exec(createStationPointsTable); err != nil {
+	if _, err := db.Exec(createStationsTable); err != nil {
 		return err
 	}
 

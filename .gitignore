@@ -18,3 +18,5 @@
 # Environment variables
 .env
 *.kmz
+
+logfile

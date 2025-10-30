@@ -21,19 +21,19 @@ func New(apiHandler *handler.ApiHandler) http.Handler {
 
 	// For development, allow all origins. In production, you should restrict this.
 	corsOrigins := handlers.AllowedOrigins([]string{"*"})
-	corsMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	corsMethods := handlers.AllowedMethods([]string{"POST", "OPTIONS"})
 	corsHeaders := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "token", "dt"})
 
 	r.Use(loggingMiddleware)
 
 	api := r.PathPrefix("/api").Subrouter()
 
-	api.HandleFunc("/blockedSign/qry", apiHandler.GetBlockedSigns).Methods(http.MethodGet)
+	api.HandleFunc("/blockedSign/qry", apiHandler.GetBlockedSigns).Methods(http.MethodPost)
 	api.HandleFunc("/station/create", apiHandler.CreateStation).Methods(http.MethodPost)
-	api.HandleFunc("/station/qry", apiHandler.GetStations).Methods(http.MethodGet)
-	api.HandleFunc("/station/{id}", apiHandler.GetStationByID).Methods(http.MethodGet)
-	api.HandleFunc("/station/{id}", apiHandler.UpdateStation).Methods(http.MethodPut)
-	api.HandleFunc("/station/{id}", apiHandler.DeleteStation).Methods(http.MethodDelete)
+	api.HandleFunc("/station/qry", apiHandler.GetStations).Methods(http.MethodPost)
+	api.HandleFunc("/station/qryById", apiHandler.GetStationByID).Methods(http.MethodPost)
+	api.HandleFunc("/station/update", apiHandler.UpdateStation).Methods(http.MethodPost)
+	api.HandleFunc("/station/delete", apiHandler.DeleteStation).Methods(http.MethodPost)
 
 	// Wrap the router with the CORS middleware
 	return handlers.CORS(corsOrigins, corsMethods, corsHeaders)(r)

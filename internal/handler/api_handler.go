@@ -2,9 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 
 	"go-https-server/internal/models"
 	"go-https-server/internal/store"
@@ -28,7 +26,7 @@ type StationCreateReq struct {
 	Tags      []string `json:"tags"`
 }
 
-// GetBlockedSigns handles GET /api/blockedSign/qry
+// GetBlockedSigns handles POST /api/blockedSign/qry
 func (h *ApiHandler) GetBlockedSigns(w http.ResponseWriter, r *http.Request) {
 	signs, err := h.store.GetBlockedSigns()
 	if err != nil {
@@ -61,7 +59,7 @@ func (h *ApiHandler) CreateStation(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, st)
 }
 
-// GetStations handles GET /api/station/qry
+// GetStations handles POST /api/station/qry
 func (h *ApiHandler) GetStations(w http.ResponseWriter, r *http.Request) {
 	points, err := h.store.GetStations()
 	if err != nil {
@@ -71,16 +69,20 @@ func (h *ApiHandler) GetStations(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, points)
 }
 
-// GetStationByID handles GET /api/station/{id}
+// StationRequestByID is the request DTO for getting a station by ID.
+type StationRequestByID struct {
+	ID int `json:"id"`
+}
+
+// GetStationByID handles POST /api/station/qryById
 func (h *ApiHandler) GetStationByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid station ID")
+	var req StationRequestByID
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Bad Request")
 		return
 	}
 
-	station, err := h.store.GetStationByID(id)
+	station, err := h.store.GetStationByID(req.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -95,19 +97,13 @@ func (h *ApiHandler) GetStationByID(w http.ResponseWriter, r *http.Request) {
 
 // StationUpdateReq is the request DTO for updating a station.
 type StationUpdateReq struct {
+	ID   int      `json:"id"`
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`
 }
 
-// UpdateStation handles PUT /api/station/{id}
+// UpdateStation handles POST /api/station/update
 func (h *ApiHandler) UpdateStation(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid station ID")
-		return
-	}
-
 	var req StationUpdateReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Bad Request")
@@ -115,7 +111,7 @@ func (h *ApiHandler) UpdateStation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	st := &models.Station{
-		ID:   id,
+		ID:   req.ID,
 		Name: req.Name,
 		Tags: req.Tags,
 	}
@@ -128,16 +124,20 @@ func (h *ApiHandler) UpdateStation(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, st)
 }
 
-// DeleteStation handles DELETE /api/station/{id}
+// StationDeleteReq is the request DTO for deleting a station.
+type StationDeleteReq struct {
+	ID int `json:"id"`
+}
+
+// DeleteStation handles POST /api/station/delete
 func (h *ApiHandler) DeleteStation(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid station ID")
+	var req StationDeleteReq
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Bad Request")
 		return
 	}
 
-	if err := h.store.DeleteStation(id); err != nil {
+	if err := h.store.DeleteStation(req.ID); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}

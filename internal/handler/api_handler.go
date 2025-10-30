@@ -56,7 +56,7 @@ func (h *ApiHandler) CreateStation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, st)
+	respondWithJSON(w, http.StatusOK, st)
 }
 
 // GetStations handles POST /api/station/qry
